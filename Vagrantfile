@@ -33,11 +33,6 @@ Vagrant.configure("2") do |config|
 
         echo '%teligent ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/teligent
       SHELL
-
-      srv.vm.provision "shell", inline: <<-SHELL
-        curl -L https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.rpm.sh | sudo bash
-        sudo yum install gitlab-runner -y
-      SHELL
     end
   end
 end
