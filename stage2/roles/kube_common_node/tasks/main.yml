@@ -1,0 +1,77 @@
+---
+- name: install docker repositories
+  template:
+    src: etc/yum.repos.d/docker-ce.repo.j2
+    dest: /etc/yum.repos.d/docker-ce.repo
+
+- name: add kubernetes repository
+  yum_repository:
+    name: Kubernetes
+    description: Kubernetes YUM repository
+    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+    gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+    gpgcheck: yes
+
+- name: set iptables option for correct routing
+  shell: modprobe br_netfilter && sysctl net.bridge.bridge-nf-call-iptables=1
+
+#- name: set cgroupdriver to systemd
+#  shell: /usr/lib/systemd/system/docker.service set --exec-opt native.cgroupdriver=systemd
+
+- name: install docker-ce
+  package:
+    name: docker-ce
+    state: present
+
+- name: enable docker
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Ensure group "docker" exists
+  group:
+    name: docker
+    state: present
+
+- name: Add the user 'teligent' with a specific uid and a primary group of 'docker'
+  user:
+    name: teligent
+    group: docker
+
+- name: install common kubernetes packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - kubelet-{{ kubernetes_version }}
+    - kubectl-{{ kubernetes_version }}
+    - kubeadm-{{ kubernetes_version }}
+    - kubernetes-cni
+
+- name: open ports on firewalld
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+  with_items:
+    - 6443/tcp
+    - 10250/tcp
+    - 8080/tcp
+    - 443/tcp
+    - 2379-2380/tcp
+    - 30000-32767/tcp
+
+- name: disable service firewalld
+  systemd:
+    name: firewalld
+    enabled: no
+
+- name: disable swap
+  shell: swapoff -a
+
+- name: enable & start kubelet service
+  systemd:
+    name: kubelet
+    state: started
+    enabled: yes

@@ -1,0 +1,94 @@
+---
+- name: set hostname
+  hostname: 
+    name: "{{ inventory_hostname }}"
+  notify:
+    - restart network
+  tags:
+    - common
+
+- name: build hosts file for all machines
+  template:
+    src: etc/hosts.j2 
+    dest: /etc/hosts
+  tags:
+    - common
+    - hosts
+
+- name: install packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - epel-release
+    - bind-utils
+    - logrotate
+    - lsof
+    - mc
+    - net-tools
+    - rsyslog
+    - tcpdump
+    - telnet
+    - unzip
+    - vim
+  tags:
+    - common
+    - packages
+
+- name: disable SELinux
+  selinux: 
+    state: disabled
+  tags:
+    - common
+
+- name: build root .bashrc
+  template: 
+    src: "{{ item }}/bashrc.j2"
+    dest: "/{{ item }}/.bashrc"
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: 0644
+  with_items:
+    - root
+  tags:
+    - bashrc
+    - bashrc_root
+
+- name: build root .vimrc
+  template:
+    src: "vimrc.j2"
+    dest: "/root/.vimrc"
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: 0644
+  with_items:
+    - root
+  tags:
+    - vimrc
+    - vimrc_root
+
+- name: build teligent .bashrc
+  template: 
+    src: "home/{{ item }}/bashrc.j2"
+    dest: "/home/{{ item }}/.bashrc"
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: 0644
+  with_items:
+    - teligent
+  tags:
+    - bashrc
+    - bashrc_teligent
+
+- name: build teligent .vimrc
+  template:
+    src: "vimrc.j2"
+    dest: "/home/{{ item }}/.vimrc"
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: 0644
+  with_items:
+    - teligent
+  tags:
+    - vimrc
+    - vimrc_teligent

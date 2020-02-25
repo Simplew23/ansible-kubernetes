@@ -1,0 +1,17 @@
+---
+- hosts: kube_common_node
+  become: yes
+  roles:
+    - kube_common_node
+
+- hosts: kube_master_node
+  become: yes
+  roles:
+    - kube_master_node
+    - kube_init_cluster 
+
+
+- hosts: kube_minion_node
+  become: yes
+  roles:
+    - kube_join_nodes

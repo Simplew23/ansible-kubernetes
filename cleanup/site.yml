@@ -1,0 +1,21 @@
+---
+- hosts: kube_common_node
+  become: yes
+  tasks:
+    - name: reset kubeadm
+      shell: kubeadm reset --force
+
+    - name: stop kubelet service
+      systemd:
+        name: kubelet
+        state: stopped
+
+    - name: remove all kubernetes packages
+      package:
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - kubeadm
+        - kubelet
+        - kubectl
+        - kubernetes-cni

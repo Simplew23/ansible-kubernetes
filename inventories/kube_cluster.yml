@@ -1,0 +1,17 @@
+all:
+  hosts:
+    kube-master-01:
+    kube-minion-01:
+    kube-minion-02:
+    kube-minion-03:
+  children:
+    kube_common_node:
+      children:
+        kube_master_node:
+          hosts:
+            kube-master-01:
+        kube_minion_node:
+          hosts:
+            kube-minion-01:
+            kube-minion-02:
+            kube-minion-03:

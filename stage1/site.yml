@@ -1,0 +1,6 @@
+---
+# Make some common actions
+- hosts: all
+  become: yes
+  roles: 
+    - common

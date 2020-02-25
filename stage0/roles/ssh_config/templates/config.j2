@@ -1,0 +1,15 @@
+Host *
+Compression yes
+ControlMaster auto
+ControlPersist 30m
+ControlPath ~/.ansible/cp/ansible-ssh-%h-%p-%r
+ForwardAgent yes
+StrictHostKeyChecking no
+
+{% for host in groups.all | sort %}
+Host {{ host }}
+HostName {{ hostvars[host].ip }}
+User teligent
+
+{% endfor %}
+

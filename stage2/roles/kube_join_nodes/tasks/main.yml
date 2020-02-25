@@ -1,0 +1,11 @@
+---
+- name: reset before join to cluster
+  become: yes
+  shell: kubeadm reset --force
+  tags:
+    - join_nodes
+
+- name: join to cluster
+  shell: "{{ hostvars['kube-master-01'].join_command }}"
+  tags:
+    - join_nodes

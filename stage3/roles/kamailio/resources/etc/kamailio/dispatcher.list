@@ -1,0 +1,5 @@
+{% for host in groups['app_servers'] %}
+{% if hostvars[host].ansible_eth1 is defined %}
+1 sip:{{ hostvars[host].ansible_eth1.ipv4.address }}:5060 0 "sai_{{ hostvars[host].ansible_hostname }}"
+{% endif %}
+{% endfor %}

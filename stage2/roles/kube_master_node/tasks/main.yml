@@ -1,0 +1,7 @@
+---
+- name: install kubernetes master
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - kubectl

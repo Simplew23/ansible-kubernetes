@@ -1,0 +1,6 @@
+---
+- name: build ssh conifg
+  template:
+    src: config.j2
+    dest: ~/.ssh/config
+    mode: 0640
